@@ -20,7 +20,7 @@ namespace RestaurantAPI.Controllers
         {
             var id = _restaurantService.Create(dto);
 
-            return Created($"/api/restaurants/{id}", null);
+            return Created($"/api/restaurant/{id}", null);
         }
 
         [HttpGet]
