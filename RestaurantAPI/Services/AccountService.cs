@@ -68,7 +68,7 @@ namespace RestaurantAPI.Services
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new(ClaimTypes.Name, $"{user.Email}"),
                 new(ClaimTypes.Role, $"{user.Role.Name}"),
                 new("DateOfBirth", user.DateOfBirth?.ToString("yyyy-MM-dd") ?? string.Empty),
                 new("Nationality", user.Nationality)

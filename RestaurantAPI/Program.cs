@@ -1,10 +1,12 @@
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
 using RestaurantAPI;
+using RestaurantAPI.Authorization;
 using RestaurantAPI.Entites;
 using RestaurantAPI.Middleware;
 using RestaurantAPI.Models;
@@ -34,6 +36,16 @@ builder.Services.AddAuthentication(option =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("HasNationality", x => x.RequireClaim("Nationality", "Polish"));
+    options.AddPolicy("Atleast20", x => x.AddRequirements(new MinimumAgeRequirement(20)));
+    options.AddPolicy("CreatedAtleast2Restaurants", x => x.AddRequirements(new CreatedMultipleRestaurantsRequirement(2)));
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, CreatedMultipleRestaurantsRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddDbContext<RestaurantDbContext>();
@@ -47,6 +59,8 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
