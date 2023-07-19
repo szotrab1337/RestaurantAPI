@@ -7,9 +7,10 @@ namespace RestaurantAPI.Models.Validators
     {
         private readonly RestaurantDbContext _dbContext;
 
-        public RegisterUserDtoValidator(RestaurantDbContext _dbContext)
+        public RegisterUserDtoValidator(RestaurantDbContext dbContext)
         {
-            this._dbContext = _dbContext;
+            _dbContext = dbContext;
+
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .EmailAddress();
@@ -24,7 +25,7 @@ namespace RestaurantAPI.Models.Validators
             RuleFor(x => x.Email)
                 .Custom((value, context) =>
                 {
-                    var emailInUse = _dbContext.Users.Any(x => x.Email == value);
+                    var emailInUse = dbContext.Users.Any(x => x.Email == value);
 
                     if (emailInUse)
                     {
