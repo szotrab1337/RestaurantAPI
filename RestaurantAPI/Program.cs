@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
 using RestaurantAPI;
@@ -48,7 +49,10 @@ builder.Services.AddScoped<IAuthorizationHandler, CreatedMultipleRestaurantsRequ
 builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddDbContext<RestaurantDbContext>();
+builder.Services.AddDbContext<RestaurantDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("RestaurantDbConnection"));
+});
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
@@ -68,8 +72,8 @@ builder.Services.AddCors(options =>
     {
         policyBuilder.AllowAnyMethod()
             .AllowAnyHeader()
-            //.AllowAnyOrigin()
-            .WithOrigins(builder.Configuration["AllowedOrigins"]);
+            .AllowAnyOrigin();
+        //.WithOrigins(builder.Configuration["AllowedOrigins"]);
     });
 });
 
