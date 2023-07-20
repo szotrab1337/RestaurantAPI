@@ -78,6 +78,7 @@ builder.Host.UseNLog();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
 app.UseCors("FrontEndClient");
 
 using var scope = app.Services.CreateScope();
