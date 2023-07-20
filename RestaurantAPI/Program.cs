@@ -78,6 +78,7 @@ builder.Host.UseNLog();
 
 var app = builder.Build();
 
+app.UseResponseCaching();
 app.UseStaticFiles();
 app.UseCors("FrontEndClient");
 
