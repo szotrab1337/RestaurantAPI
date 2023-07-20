@@ -62,11 +62,25 @@ builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator
 builder.Services.AddScoped<IValidator<RestaurantQuery>, RestaurantQueryValidator>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontEndClient", policyBuilder =>
+    {
+        policyBuilder.AllowAnyMethod()
+            .AllowAnyHeader()
+            //.AllowAnyOrigin()
+            .WithOrigins(builder.Configuration["AllowedOrigins"]);
+    });
+});
 
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
 var app = builder.Build();
+
+app.UseResponseCaching();
+app.UseStaticFiles();
+app.UseCors("FrontEndClient");
 
 using var scope = app.Services.CreateScope();
 var restaurantSeeder = scope.ServiceProvider.GetService<RestaurantSeeder>();
